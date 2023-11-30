@@ -11,11 +11,15 @@ class Highway;
 class Car{
     private:
         int speed;
+        bool danger;
         Highway* highway;
 
     public:
         Car(Highway* highway, int speed);
+        void setDanger(bool status);
+        bool getDangerStatus();
         int getSpeed();
+        void setSpeed(int newSpeed);
 };
 
 #endif
