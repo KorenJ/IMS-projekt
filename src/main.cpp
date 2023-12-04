@@ -10,6 +10,7 @@
 #define defaultAccidentLikelyhood 0.0
 #define defaultSpeedofSim 200
 #define defaultTraffic "M"
+#define cycles 500
 
 void printHelp(){
     std::cout << "Usage:\n" 
@@ -87,7 +88,7 @@ int main(int argc, char **argv){
     highway->printHighway();
 
     int cycle = 1;
-    while (cycle++){
+    while (cycle++ != cycles){
         std::this_thread::sleep_for(std::chrono::milliseconds(speedOfSim));
         highway->applyRules();
         highway->generateCars();
@@ -95,6 +96,7 @@ int main(int argc, char **argv){
     }    
         
     highway->clearMemory();
+    delete highway;
 
     return EXIT_SUCCESS;
 }

@@ -220,7 +220,7 @@ void Highway::ruleNine(int i, int j){
     if (speed == 0) return;
 
     if (j + speed > this->lenght-1){
-        delete [] this->highway[i][j];
+        delete this->highway[i][j];
         this->highway[i][j] = nullptr;
     }   
     else{
@@ -252,7 +252,7 @@ void Highway::clearMemory(){
      for (int i = 0; i < this->lanes; i++){
         for (int j = 0; j < this->lenght; j++){
             if (this->highway[i][j] != nullptr)
-                delete [] this->highway[i][j]; 
+                delete this->highway[i][j]; 
         }
         delete [] this->highway[i];
      }
