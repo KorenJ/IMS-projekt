@@ -8,6 +8,8 @@
 
 #include "car.hpp"
 
+#define accidentTime 30
+
 class Highway{
     private:   
         Car*** highway;
@@ -15,10 +17,11 @@ class Highway{
         int lenght;
         int maximumSpeed;
         double slowDownLikelyhood;
+        double accidentLikelyhood;
         bool changeLanesOn;
 
     public:
-        Highway(int lanes, int lenght, int maximumSpeed, double slowDownLikelyhood, bool changeLanesOn);
+        Highway(int lanes, int lenght, int maximumSpeed, double slowDownLikelyhood, double accidentLikelyhood, bool changeLanesOn);
 
         void generateCars();
 
@@ -31,8 +34,8 @@ class Highway{
         // void ruleSix(int i, int j);
         void ruleSeven(int i, int j);
         void ruleEight(int i, int j, double slowDownLikelyhood);
+        void ruleEight2(int i, int j, double accidentLikelyhood);
         void ruleNine(int i, int j);
-
         void printHighway();
         void clearMemory();
         int getLanes();

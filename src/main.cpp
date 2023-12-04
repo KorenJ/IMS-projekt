@@ -6,8 +6,8 @@
 #define HighwayLenght 150
 #define defaultLanes 2
 #define defaultVelocity 5
-#define defaultSlowdownLikelyhood 10.0
-#define defaultAccidentLikelyhood 10.0
+#define defaultSlowdownLikelyhood 20.0
+#define defaultAccidentLikelyhood 0.0
 #define defaultSpeedofSim 200
 #define defaultTraffic "M"
 
@@ -17,7 +17,7 @@ void printHelp(){
               << "Lanes define number of highway lanes. Max 5.\n"
               << "Traffic defines how heavy traffic is, choose from L (low), M (medium), H (high), E (extreme).\n"
               << "Slowdown defines the propability of a driver randomly slowing down (simulates human error in traffic), in %. Max 80.\n"
-              << "Accident defines the probability of an accident occuring to each car, in ‰. Max 100.\n"
+              << "Accident defines the probability of an accident occuring to each car, in ‰. Max 10.\n"
               << "Speed of simulation in miliseconds.\n"
               << "Velocity defines car's velocity in simulation. 1 repesents 25km/h, that is 1cell/tick. Max 9.\n"
               << "-c flag turns off the ability of drivers to change lanes.\n";
@@ -60,13 +60,13 @@ int main(int argc, char **argv){
         }
         else if (args[i] == "-s"){
             slowdownLikelyhood = stod(args[++i]);
-            if (slowdownLikelyhood > 80) slowdownLikelyhood = 80;
-            if (slowdownLikelyhood < 0) slowdownLikelyhood = 0;
+            if (slowdownLikelyhood > 80) slowdownLikelyhood = 80.0;
+            if (slowdownLikelyhood < 0) slowdownLikelyhood = 0.0;
         }
         else if (args[i] == "-a"){
             accidentLikelyhood = stod(args[++i]);
-            if (accidentLikelyhood > 100) accidentLikelyhood = 100;
-            if (accidentLikelyhood < 0) accidentLikelyhood = 0;
+            if (accidentLikelyhood > 10) accidentLikelyhood = 10.0;
+            if (accidentLikelyhood < 0) accidentLikelyhood = 0.0;
         }
         else if (args[i] == "-g"){
             speedOfSim = stoi(args[++i]);
@@ -82,15 +82,15 @@ int main(int argc, char **argv){
         } 
     }
 
-    Highway *highway = new Highway(lanes, lenght, velocity, slowdownLikelyhood, changeLanesOn);
+    Highway *highway = new Highway(lanes, lenght, velocity, slowdownLikelyhood, accidentLikelyhood, changeLanesOn);
 
     highway->printHighway();
 
     int cycle = 1;
     while (cycle++){
         std::this_thread::sleep_for(std::chrono::milliseconds(speedOfSim));
-        highway->generateCars();
         highway->applyRules();
+        highway->generateCars();
         highway->printHighway();
     }    
         

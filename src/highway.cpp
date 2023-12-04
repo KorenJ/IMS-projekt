@@ -1,7 +1,8 @@
 #include "../include/highway.hpp"
 
-Highway::Highway(int lanes, int lenght, int maximumSpeed, double slowDownLikelyhood, bool changeLanesOn){
+Highway::Highway(int lanes, int lenght, int maximumSpeed, double slowDownLikelyhood, double accidentLikelyhood, bool changeLanesOn){
     this->slowDownLikelyhood = slowDownLikelyhood;
+    this->accidentLikelyhood = accidentLikelyhood;
     this->maximumSpeed = maximumSpeed;
     this->lanes = lanes;
     this->lenght = lenght;
@@ -22,32 +23,45 @@ Highway::Highway(int lanes, int lenght, int maximumSpeed, double slowDownLikelyh
         std::cerr << "Unexpected error: " << e.what() << "\n.";
         exit(EXIT_FAILURE);
     }
+
+    // SCENARIOS
+    /*
+    this->highway[0][55] = new Car(this, 0);
+    this->highway[0][56] = new Car(this, 0);
+    this->highway[0][57] = new Car(this, 0);
+    this->highway[0][58] = new Car(this, 0);
+    this->highway[0][59] = new Car(this, 0);
+    this->highway[0][60] = new Car(this, 0);
+    this->highway[0][52] = new Car(this, 5);
+    */
+    //
+
 }
 
 void Highway::generateCars(){
-    for (int i = 0; i < this->lanes; i++){
-        int rand = std::rand() % 100;
-        if (rand > (-5)*(i - this->lanes)){
-            if (this->highway[i][0] == nullptr){
-                this->highway[i][0] = new Car(this, this->maximumSpeed - 1);
-            }
-        }
+    for (int i = this->lanes - 1; i >= 0; i--){
+        int rand = std::rand() % 100;             // 3 lanes -> 33 %, 66 %, 100 %
+        if (rand < ((i + 1)*100)/(this->lanes))   // 2 lanes -> 50 %, 100 % etc.
+                if (this->highway[i][0] == nullptr){
+                    this->highway[i][0] = new Car(this, this->maximumSpeed - 1);
+                }
     }
 }
 
 void Highway::applyRules(){
-    for (int j = 0; j < this->lenght; j++){
+    for (int j = this->lenght - 1; j >= 0; j--){
         for (int i = 0; i < this->lanes; i++){
             if (this->highway[i][j] != nullptr){
                 this->highway[i][j]->setDanger(false);
                 int distance = this->ruleOne(i, j);
-                if (changeLanesOn)
+                if (changeLanesOn && this->lanes > 1)
                     if (this->ruleTwo(i, j)){
                         // all rules must apply to this position, even after changing lanes
                         i = this->ruleThree(i, j, distance);
                     }
                 this->ruleSeven(i, j);
                 this->ruleEight(i, j, this->slowDownLikelyhood);
+                this->ruleEight2(i, j, this->accidentLikelyhood);
             }
         }
     }
@@ -118,26 +132,23 @@ int Highway::ruleThree(int i, int j, int distance){
         }
     }
     else{
-        if (this->highway[i-1][j] != nullptr && this->highway[i+1][j] != nullptr)
-            return i;
-
         //check "left" side (i - 1)
-        if (this->highway[i-1][j] != nullptr)
+        if (this->highway[i-1][j] == nullptr)
             if (this->ruleFour(i-1, j, distance))
                 if (this->ruleFive(i-1, j)){
                     // ruleSix
                     this->highway[i-1][j] = this->highway[i][j];
-                    this->highway[i][j] = nullptr;  
-                    return i - 1; 
+                    this->highway[i][j] = nullptr;
+                    return i - 1;
                 }
         //check "right" side (i + 1)
-        else if (this->highway[i+1][j] != nullptr)
+        if (this->highway[i+1][j] == nullptr)
             if (this->ruleFour(i+1, j, distance))
                 if (this->ruleFive(i+1, j)){
                     //ruleSix
                     this->highway[i+1][j] = this->highway[i][j];
-                    this->highway[i][j] = nullptr;  
-                    return i + 1;   
+                    this->highway[i][j] = nullptr; 
+                    return i + 1;      
                 }
     }
     return i;
@@ -169,7 +180,8 @@ void Highway::ruleSeven(int i, int j){
     // check area in from of the car
     for (int area = 1; area <= speed  && j + area < this->lenght; area++){
         if (this->highway[i][j+area] != nullptr){
-            this->highway[i][j]->setSpeed(area-1);     
+            this->highway[i][j]->setSpeed(area-1);  
+            return; 
         }                    
     }
 }
@@ -183,17 +195,37 @@ void Highway::ruleEight(int i, int j, double slowDownLikelyhood){
     }
 }
 
+void Highway::ruleEight2(int i, int j, double accidentLikelyhood){
+    // if stop time isnt 0
+    int k = this->highway[i][j]->getStopTime();
+    if (k){
+        this->highway[i][j]->setStopTime(k-1);
+        this->highway[i][j]->setSpeed(0);
+        return;
+    }
+    double rand = std::rand() % 1000;
+    if (rand < this->accidentLikelyhood && j > this->lenght/3){  //accident must happen later to be far from generation point
+        this->highway[i][j]->setStopTime(accidentTime);   
+        this->highway[i][j]->setSpeed(0);             
+    }
+}
+
 void Highway::ruleNine(int i, int j){
+    // first check for accidents
+    if (this->highway[i][j]->getStopTime()){
+        return;
+    }
+
     int speed  = this->highway[i][j]->getSpeed();
-    if (j + speed > this->lenght){
+    if (speed == 0) return;
+
+    if (j + speed > this->lenght-1){
         delete [] this->highway[i][j];
         this->highway[i][j] = nullptr;
     }   
     else{
-        if (speed != 0){
-            this->highway[i][j+speed] = this->highway[i][j];
-            this->highway[i][j] = nullptr;
-        }
+        this->highway[i][j+speed] = this->highway[i][j];
+        this->highway[i][j] = nullptr;
     }
 }
 
@@ -203,6 +235,10 @@ void Highway::printHighway(){
             Car *point = this->highway[i][j];
             if (point == nullptr){ 
                 std::cout << '.';
+                continue;
+            }
+            if (point->getStopTime()){
+                std::cout << 'X';
                 continue;
             }
             std::cout << point->getSpeed();

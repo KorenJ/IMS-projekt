@@ -3,6 +3,7 @@
 Car::Car(Highway* highway, int speed){
     this->highway = highway;
     this->speed = speed;
+    this->stopTime = 0;
 }
 
 void Car::setDanger(bool status){
@@ -19,4 +20,12 @@ void Car::setSpeed(int newSpeed){
 
 int Car::getSpeed(){
     return this->speed;
+}
+
+int Car::getStopTime(){
+    return this->stopTime;
+}
+
+void Car::setStopTime(int value){
+    this->stopTime = value;
 }
