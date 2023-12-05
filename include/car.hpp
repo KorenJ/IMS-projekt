@@ -14,6 +14,7 @@ class Car{
         bool danger;
         Highway* highway;
         int stopTime;
+        bool noted;
 
     public:
         Car(Highway* highway, int speed);
@@ -23,6 +24,8 @@ class Car{
         void setSpeed(int newSpeed);
         int getStopTime();
         void setStopTime(int value);
+        bool isNoted();
+        void noteCar();
 };
 
 #endif

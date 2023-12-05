@@ -10,6 +10,8 @@
 
 #define accidentTime 30
 
+#define logPlace 50
+
 class Highway{
     private:   
         Car*** highway;
@@ -19,13 +21,17 @@ class Highway{
         double slowDownLikelyhood;
         double accidentLikelyhood;
         bool changeLanesOn;
+        double traffic;
+        double avgSpeed;
+
+        int carFlow;
 
     public:
-        Highway(int lanes, int lenght, int maximumSpeed, double slowDownLikelyhood, double accidentLikelyhood, bool changeLanesOn);
+        Highway(int lanes, int lenght, int maximumSpeed, double slowDownLikelyhood, double accidentLikelyhood, bool changeLanesOn, double traffic);
 
         void generateCars();
 
-        void applyRules();
+        double applyRules();
         int ruleOne(int i, int j);
         bool ruleTwo(int i, int j);
         int ruleThree(int i, int j, int distance);
@@ -36,10 +42,12 @@ class Highway{
         void ruleEight(int i, int j, double slowDownLikelyhood);
         void ruleEight2(int i, int j, double accidentLikelyhood);
         void ruleNine(int i, int j);
+        void handleLogs();
         void printHighway();
         void clearMemory();
         int getLanes();
         int getLenght();
+        int getCarFlow();
 };
 
 #endif

@@ -4,6 +4,7 @@ Car::Car(Highway* highway, int speed){
     this->highway = highway;
     this->speed = speed;
     this->stopTime = 0;
+    this->noted = false;
 }
 
 void Car::setDanger(bool status){
@@ -28,4 +29,12 @@ int Car::getStopTime(){
 
 void Car::setStopTime(int value){
     this->stopTime = value;
+}
+
+bool Car::isNoted(){
+    return this->noted;
+}
+
+void Car::noteCar(){
+    this->noted = true;
 }

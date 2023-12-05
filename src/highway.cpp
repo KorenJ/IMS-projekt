@@ -1,12 +1,15 @@
 #include "../include/highway.hpp"
 
-Highway::Highway(int lanes, int lenght, int maximumSpeed, double slowDownLikelyhood, double accidentLikelyhood, bool changeLanesOn){
+Highway::Highway(int lanes, int lenght, int maximumSpeed, double slowDownLikelyhood, double accidentLikelyhood, bool changeLanesOn, double traffic){
     this->slowDownLikelyhood = slowDownLikelyhood;
     this->accidentLikelyhood = accidentLikelyhood;
     this->maximumSpeed = maximumSpeed;
     this->lanes = lanes;
     this->lenght = lenght;
     this->changeLanesOn = changeLanesOn;
+    this->traffic = traffic;
+    this->carFlow = 0;
+    this->avgSpeed = 0;
 
     srand(time(NULL)); // seed for rand
     
@@ -25,15 +28,14 @@ Highway::Highway(int lanes, int lenght, int maximumSpeed, double slowDownLikelyh
     }
 
     // SCENARIOS
-    /*
-    this->highway[0][55] = new Car(this, 0);
-    this->highway[0][56] = new Car(this, 0);
-    this->highway[0][57] = new Car(this, 0);
-    this->highway[0][58] = new Car(this, 0);
-    this->highway[0][59] = new Car(this, 0);
-    this->highway[0][60] = new Car(this, 0);
-    this->highway[0][52] = new Car(this, 5);
-    */
+    for (int j = 0; j < this->lenght; j++){
+        for (int i = 0; i < this->lanes; i++){
+            int rand = std::rand() % 100;
+            if (rand < traffic*100){
+                this->highway[i][j] = new Car(this, this->maximumSpeed/2);
+            }
+        }
+    }
     //
 
 }
@@ -48,7 +50,7 @@ void Highway::generateCars(){
     }
 }
 
-void Highway::applyRules(){
+double Highway::applyRules(){
     for (int j = this->lenght - 1; j >= 0; j--){
         for (int i = 0; i < this->lanes; i++){
             if (this->highway[i][j] != nullptr){
@@ -66,13 +68,18 @@ void Highway::applyRules(){
         }
     }
     // move
+    double speedAll = 0;
+    double cars = 0;
     for (int j = this->lenght - 1; j >= 0; j--){
         for (int i = 0; i < this->lanes; i++){
             if (this->highway[i][j] != nullptr){
+                speedAll += this->highway[i][j]->getSpeed();
+                cars++;
                 this->ruleNine(i, j);
             }
         }
     }
+    return cars != 0 ? speedAll/cars : 0;
 }
 
 /**
@@ -227,6 +234,20 @@ void Highway::ruleNine(int i, int j){
         this->highway[i][j+speed] = this->highway[i][j];
         this->highway[i][j] = nullptr;
     }
+    this->handleLogs();
+}
+
+void Highway::handleLogs(){
+    for (int i = 0; i < this->lanes; i++){
+        for (int j = logPlace - this->maximumSpeed/2; j < logPlace + this->maximumSpeed/2; j++){
+            if (this->highway[i][j] != nullptr){
+                if (this->highway[i][j]->getSpeed() != 0 && !this->highway[i][j]->isNoted()){
+                    this->highway[i][j]->noteCar();
+                    this->carFlow++;
+                }
+            }
+        }
+    }
 }
 
 void Highway::printHighway(){
@@ -265,4 +286,8 @@ int Highway::getLanes(){
 
 int Highway::getLenght(){
     return this->lenght;
+}
+
+int Highway::getCarFlow(){
+    return this->carFlow;
 }
