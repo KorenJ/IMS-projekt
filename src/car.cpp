@@ -1,3 +1,8 @@
+/**
+ * file for Car params
+ * @author Jakub Kořínek (xkorin17), Martin Benovič (xbenov00)
+ */
+
 #include "../include/highway.hpp"
 
 Car::Car(Highway* highway, int speed){
