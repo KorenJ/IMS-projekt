@@ -1,3 +1,8 @@
+/**
+ * header file for Car initialization
+ * @author Jakub Kořínek (xkorin17), Martin Benovič (xbenov00)
+ */
+
 #ifndef CAR_HPP
 #define CAR_HPP
 
