@@ -1,3 +1,8 @@
+/**
+ * file with Highway functions and rules for cars
+ * @author Jakub Kořínek (xkorin17), Martin Benovič (xbenov00)
+ */
+
 #include "../include/highway.hpp"
 
 Highway::Highway(int lanes, int lenght, int maximumSpeed, double slowDownLikelyhood, double accidentLikelyhood, bool changeLanesOn, double traffic){
