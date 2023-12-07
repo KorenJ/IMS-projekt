@@ -1,3 +1,8 @@
+/**
+ * main file
+ * @author Jakub Kořínek (xkorin17), Martin Benovič (xbenov00)
+ */
+
 #include "../include/highway.hpp"
 #include <vector>
 #include <thread>
