@@ -1,3 +1,8 @@
+/**
+ * header file for Highway initialization
+ * @author Jakub Kořínek (xkorin17), Martin Benovič (xbenov00)
+ */
+
 #ifndef HIGHWAY_HPP
 #define HIGHWAY_HPP
 
